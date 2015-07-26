@@ -12,11 +12,11 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.List;
 
-public class ImageRecordsAdapter extends ArrayAdapter<ImageRecord> {
+public class MessageRecordsAdapter extends ArrayAdapter<MessageRecord> {
     private ImageLoader mImageLoader;
 
-    public ImageRecordsAdapter(Context context) {
-        super(context, R.layout.image_list_item);
+    public MessageRecordsAdapter(Context context) {
+        super(context, R.layout.message_item);
 
         mImageLoader = new ImageLoader(VolleyApplication.getInstance().getRequestQueue(), new BitmapLruCache());
     }
@@ -24,25 +24,25 @@ public class ImageRecordsAdapter extends ArrayAdapter<ImageRecord> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.image_list_item, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.message_item, parent, false);
         }
 
         // NOTE: You would normally use the ViewHolder pattern here
         NetworkImageView imageView = (NetworkImageView) convertView.findViewById(R.id.image1);
         TextView textView = (TextView) convertView.findViewById(R.id.text1);
 
-        ImageRecord imageRecord = getItem(position);
+        MessageRecord imageRecord = getItem(position);
 
-        imageView.setImageUrl(imageRecord.getUrl(), mImageLoader);
-        textView.setText(imageRecord.getTitle());
+        imageView.setImageUrl(imageRecord.getImageUrl(), mImageLoader);
+        textView.setText(imageRecord.getComment());
 
         return convertView;
     }
 
-    public void swapImageRecords(List<ImageRecord> objects) {
+    public void setMessageRecords(List<MessageRecord> objects) {
         clear();
 
-        for(ImageRecord object : objects) {
+        for(MessageRecord object : objects) {
             add(object);
         }
 

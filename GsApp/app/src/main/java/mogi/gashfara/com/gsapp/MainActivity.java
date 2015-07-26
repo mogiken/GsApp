@@ -1,6 +1,5 @@
 package mogi.gashfara.com.gsapp;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -22,7 +21,7 @@ import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
-    private ImageRecordsAdapter mAdapter;
+    private MessageRecordsAdapter mAdapter;
 
 
     @Override
@@ -30,9 +29,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAdapter = new ImageRecordsAdapter(this);
+        mAdapter = new MessageRecordsAdapter(this);
 
-        ListView listView = (ListView) findViewById(R.id.list1);
+        ListView listView = (ListView) findViewById(R.id.mylist);
         listView.setAdapter(mAdapter);
 
         fetch();
@@ -47,9 +46,9 @@ public class MainActivity extends ActionBarActivity {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
                         try {
-                            List<ImageRecord> imageRecords = parse(jsonObject);
+                            List<MessageRecord> messageRecords = parse(jsonObject);
 
-                            mAdapter.swapImageRecords(imageRecords);
+                            mAdapter.setMessageRecords(messageRecords);
                         }
                         catch(JSONException e) {
                             Toast.makeText(getApplicationContext(), "Unable to parse data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -65,17 +64,17 @@ public class MainActivity extends ActionBarActivity {
 
         VolleyApplication.getInstance().getRequestQueue().add(request);
     }
-    private List<ImageRecord> parse(JSONObject json) throws JSONException {
-        ArrayList<ImageRecord> records = new ArrayList<ImageRecord>();
+    private List<MessageRecord> parse(JSONObject json) throws JSONException {
+        ArrayList<MessageRecord> records = new ArrayList<MessageRecord>();
 
-        JSONArray jsonImages = json.getJSONArray("images");
+        JSONArray jsonImages = json.getJSONArray("messages");
 
         for(int i =0; i < jsonImages.length(); i++) {
             JSONObject jsonImage = jsonImages.getJSONObject(i);
-            String title = jsonImage.getString("title");
-            String url = jsonImage.getString("url");
+            String title = jsonImage.getString("comment");
+            String url = jsonImage.getString("imageUrl");
 
-            ImageRecord record = new ImageRecord(url, title);
+            MessageRecord record = new MessageRecord(url, title);
             records.add(record);
         }
 
