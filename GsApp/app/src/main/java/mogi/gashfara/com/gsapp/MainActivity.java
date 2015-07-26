@@ -1,18 +1,87 @@
 package mogi.gashfara.com.gsapp;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private ImageRecordsAdapter mAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mAdapter = new ImageRecordsAdapter(this);
+
+        ListView listView = (ListView) findViewById(R.id.list1);
+        listView.setAdapter(mAdapter);
+
+        fetch();
+
     }
+
+    private void fetch() {
+        JsonObjectRequest request = new JsonObjectRequest(
+                "http://gashfara.com/test/json.txt" ,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+                        try {
+                            List<ImageRecord> imageRecords = parse(jsonObject);
+
+                            mAdapter.swapImageRecords(imageRecords);
+                        }
+                        catch(JSONException e) {
+                            Toast.makeText(getApplicationContext(), "Unable to parse data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Toast.makeText(getApplicationContext(), "Unable to fetch data: " + volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        VolleyApplication.getInstance().getRequestQueue().add(request);
+    }
+    private List<ImageRecord> parse(JSONObject json) throws JSONException {
+        ArrayList<ImageRecord> records = new ArrayList<ImageRecord>();
+
+        JSONArray jsonImages = json.getJSONArray("images");
+
+        for(int i =0; i < jsonImages.length(); i++) {
+            JSONObject jsonImage = jsonImages.getJSONObject(i);
+            String title = jsonImage.getString("title");
+            String url = jsonImage.getString("url");
+
+            ImageRecord record = new ImageRecord(url, title);
+            records.add(record);
+        }
+
+        return records;
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -35,4 +104,5 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }
