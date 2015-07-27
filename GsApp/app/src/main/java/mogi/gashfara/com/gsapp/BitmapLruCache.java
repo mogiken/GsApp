@@ -1,3 +1,4 @@
+//画像をメモリにキャッシュするクラスです。メモリの1/8まで使います。汎用的なクラスなのでどのアプリでも使えます。
 package mogi.gashfara.com.gsapp;
 
 import android.graphics.Bitmap;
