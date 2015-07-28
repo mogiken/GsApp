@@ -76,6 +76,7 @@ public class MainActivity extends ActionBarActivity {
                     }
                 });
         //作成した通信クラスをキュー、待ち行列にいれて適当なタイミングで通信します。
+        //VolleyApplicationはnewしていません。これはAndroidManifestで記載しているので起動時に自動的にnewされています。
         VolleyApplication.getInstance().getRequestQueue().add(request);
     }
     //サーバにあるjsonデータをMessageRecordに変換します。
