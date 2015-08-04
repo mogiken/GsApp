@@ -2,12 +2,6 @@
 //どのアクティビティーが起動時に実行されるのかはAndroidManifestに記述されています。
 package com.gashfara.mogi.gsapp;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -18,14 +12,6 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.kii.cloud.storage.Kii;
-import com.kii.cloud.storage.KiiBucket;
-import com.kii.cloud.storage.KiiObject;
-import com.kii.cloud.storage.KiiUser;
-import com.kii.cloud.storage.callback.KiiQueryCallBack;
-import com.kii.cloud.storage.query.KiiClause;
-import com.kii.cloud.storage.query.KiiQuery;
-import com.kii.cloud.storage.query.KiiQueryResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,23 +30,6 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //Userで追加ここから
-        //KiiCloudでのログイン状態を取得します。nullの時はログインしていない。
-        KiiUser user = KiiUser.getCurrentUser();
-        //自動ログインのため保存されているaccess tokenを読み出す。tokenがあればログインできる
-        SharedPreferences pref = getSharedPreferences(getString(R.string.save_data_name), Context.MODE_PRIVATE);
-        String token = pref.getString(getString(R.string.save_token), "");//保存されていない時は""
-        //ログインしていない時はログインのactivityに遷移.SharedPreferencesが空の時もチェックしないとLogOutできない。
-        if(user == null || token == "") {
-            // Intent のインスタンスを取得する。getApplicationContext()でViewの自分のアクティビティーのコンテキストを取得。遷移先のアクティビティーを.classで指定
-            Intent intent = new Intent(getApplicationContext(), UserActivity.class);
-            // 遷移先の画面を呼び出す
-            startActivity(intent);
-            //戻れないようにActivityを終了します。
-            finish();
-        }
-        //Userで追加ここまで
         //メイン画面のレイアウトをセットしています。ListView
         setContentView(R.layout.activity_main);
 
@@ -73,50 +42,8 @@ public class MainActivity extends ActionBarActivity {
         listView.setAdapter(mAdapter);
         //一覧のデータを作成して表示します。
         fetch();
-    }
-    //ListView2で追加ここから
-    //KiiCLoud対応のfetchです。
-    //自分で作った関数です。一覧のデータを作成して表示します。
-    private void fetch() {
-        //KiiCloudの検索条件を作成。検索条件は未設定。なので全件。
-        KiiQuery query = new KiiQuery();
-        //ソート条件を設定。日付の降順
-        query.sortByDesc("_created");
-        //バケットmessagesを検索する。最大200件
-        Kii.bucket("messages")
-                .query(new KiiQueryCallBack<KiiObject>() {
-                    //検索が完了した時
-                    @Override
-                    public void onQueryCompleted(int token, KiiQueryResult<KiiObject> result, Exception exception) {
-                        if (exception != null) {
-                            //エラー処理を書く
-                            return;
-                        }
-                        //空のMessageRecordデータの配列を作成
-                        ArrayList<MessageRecord> records = new ArrayList<MessageRecord>();
-                        //検索結果をListで得る
-                        List<KiiObject> objLists = result.getResult();
-                        //得られたListをMessageRecordに設定する
-                        for (KiiObject obj : objLists) {
-                            //_id(KiiCloudのキー)を得る。空の時は""が得られる。
-                            String id = obj.getString("_id","");
-                            String title = obj.getString("comment","");
-                            String url = obj.getString("imageUrl","");
-                            int goodCount = obj.getInt("goodCount", 0);//Goodで修正
-                            //MessageRecordを新しく作ります。
-                            MessageRecord record = new MessageRecord(id,url, title,goodCount);//Goodで修正
-                            //MessageRecordの配列に追加します。
-                            records.add(record);
-                        }
-                        //データをアダプターにセットしています。これで表示されます。
-                        mAdapter.setMessageRecords(records);
-                    }
-                }, query);
 
     }
-    //ListView2で追加ここまで
-
-    /*ListView2で削除ここから
     //自分で作った関数です。一覧のデータを作成して表示します。
     private void fetch() {
         //jsonデータをサーバーから取得する通信機能です。Volleyの機能です。通信クラスのインスタンスを作成しているだけです。通信はまだしていません。
@@ -173,10 +100,8 @@ public class MainActivity extends ActionBarActivity {
 
         return records;
     }
-    ListView2で削除ここまで*/
 
-
-    //デフォルトで作成されたメニューの関数です。
+    //デフォルトで作成されたメニューの関数です。未使用。
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -195,36 +120,6 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-        //Userで追加ここから
-        //ログアウト処理.KiiCloudにはログアウト機能はないのでAccesTokenを削除して対応。
-        if (id == R.id.log_out) {
-            //自動ログインのため保存されているaccess tokenを消す。
-            SharedPreferences pref = getSharedPreferences(getString(R.string.save_data_name), Context.MODE_PRIVATE);
-            pref.edit().clear().apply();
-            //ログイン画面に遷移
-            // Intent のインスタンスを取得する。getApplicationContext()でViewの自分のアクティビティーのコンテキストを取得。遷移先のアクティビティーを.classで指定
-            Intent intent = new Intent(getApplicationContext(), UserActivity.class);
-            // 遷移先の画面を呼び出す
-            startActivity(intent);
-            //戻れないようにActivityを終了します。
-            finish();
-            return true;
-        }
-        //Userで追加ここまで
-
-        //Postで追加ここから
-        //投稿処理
-        if (id == R.id.post) {
-            //投稿画面に遷移
-            // Intent のインスタンスを取得する。getApplicationContext()でViewの自分のアクティビティーのコンテキストを取得。遷移先のアクティビティーを.classで指定
-            Intent intent = new Intent(getApplicationContext(), PostActivity.class);
-            // 遷移先の画面を呼び出す
-            startActivity(intent);
-            //戻れないようにActivityを終了します。
-            finish();
-            return true;
-        }
-        //Postで追加ここまで
 
         return super.onOptionsItemSelected(item);
     }
