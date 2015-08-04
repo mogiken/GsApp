@@ -1,4 +1,4 @@
-package mogi.gashfara.com.gsapp;
+package com.gashfara.mogi.gsapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
