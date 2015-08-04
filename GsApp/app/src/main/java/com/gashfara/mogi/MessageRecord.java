@@ -1,5 +1,5 @@
 //1つのセルにあるデータを保存するためのデータクラスです。
-package mogi.gashfara.com.gsapp;
+package com.gashfara.mogi.gsapp;
 
 public class MessageRecord {
     //保存するデータ全てを変数で定義します。

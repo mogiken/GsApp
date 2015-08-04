@@ -1,5 +1,5 @@
 //ListViewに１つのセルの情報(message_item.xmlとMessageRecord)を結びつけるためのクラス
-package mogi.gashfara.com.gsapp;
+package com.gashfara.mogi.gsapp;
 
 import android.content.Context;
 import android.view.LayoutInflater;

@@ -1,6 +1,6 @@
 //起動時に実行されるアクティビティーです。１つの画面に１つのアクティビティーが必要です。
 //どのアクティビティーが起動時に実行されるのかはAndroidManifestに記述されています。
-package mogi.gashfara.com.gsapp;
+package com.gashfara.mogi.gsapp;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;

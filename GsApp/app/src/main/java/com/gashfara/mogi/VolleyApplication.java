@@ -1,6 +1,6 @@
 //Vollyの通信クラスです。毎回このまま使います。
-//packageはこのクラスの階層を示します。このクラスの場合はmogi.gashfara.com.gsapp.VolleyApplicationになります。
-package mogi.gashfara.com.gsapp;
+//packageはこのクラスの階層を示します。このクラスの場合はcom.gashfara.mogi.gsapp.VolleyApplicationになります。
+package com.gashfara.mogi.gsapp;
 //importはすでに用意されているAndroidSDKのクラスなどを取り込んで使用するための宣言です。
 //プログラムでpackage以外のクラスを使用するとエラーになるのでそのクラスごとに必要に応じて追加すればOKです。
 import android.app.Application;
